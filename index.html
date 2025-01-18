@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 640;
+        canvas.height = 480;
+
+        // Game variables
+        let player = { x: 100, y: 420, width: 70, height: 10, speed: 10 };
+        let platforms = [
+            { x: 300, y: 200, width: 50, height: 10, color: 'red', points: 1, velocity: 2 },
+            { x: 100, y: 250, width: 50, height: 10, color: 'yellow', points: 2, velocity: 2 },
+            { x: 500, y: 300, width: 50, height: 10, color: 'red', points: 1, velocity: 2 }
+        ];
+        let score = 0;
+        let difficulty = 2;
+
+        // Game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw platforms and move them
+            platforms.forEach(platform => {
+                ctx.fillStyle = platform.color;
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                platform.y += platform.velocity;
+                if (platform.y > canvas.height) {
+                    platform.y = 0;
+                    platform.x = Math.random() * (canvas.width - platform.width);
+                }
+
+                // Collision detection
+                if (
+                    player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y
+                ) {
+                    score += platform.points;
+                    platform.y = 0;
+                    platform.x = Math.random() * (canvas.width - platform.width);
+                }
+            });
+
+            // Display score and difficulty
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 20);
+            ctx.fillText('Difficulty: ' + difficulty, 10, 40);
+
+            // Request next frame
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Handle input
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') player.x -= player.speed;
+            if (e.key === 'ArrowRight') player.x += player.speed;
+
+            // Prevent player from going out of bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        });
+
+        // Start the game
+        gameLoop();
+    </script>
+</body>
+</html>
