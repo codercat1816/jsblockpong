@@ -62,6 +62,10 @@
         let timeElapsed = 0;
         let timerInterval;
 
+        // Movement states
+        let movingLeft = false;
+        let movingRight = false;
+
         // Start timer
         function startTimer() {
             timerInterval = setInterval(() => {
@@ -74,6 +78,14 @@
             // Clear and set background
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update player position
+            if (movingLeft) player.x -= player.speed;
+            if (movingRight) player.x += player.speed;
+
+            // Prevent player from going out of bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
 
             // Draw player
             ctx.fillStyle = 'blue';
@@ -113,25 +125,24 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Handle input
-        document.addEventListener('keydown', e => {
-            if (e.key === 'ArrowLeft') player.x -= player.speed;
-            if (e.key === 'ArrowRight') player.x += player.speed;
+        // Mobile controls
+        const leftButton = document.getElementById('leftButton');
+        const rightButton = document.getElementById('rightButton');
 
-            // Prevent player from going out of bounds
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        });
+        // Add event listeners for touch and mouse
+        leftButton.addEventListener('mousedown', () => (movingLeft = true));
+        leftButton.addEventListener('mouseup', () => (movingLeft = false));
+        leftButton.addEventListener('touchstart', () => (movingLeft = true));
+        leftButton.addEventListener('touchend', () => (movingLeft = false));
 
-        // Handle mobile controls
-        document.getElementById('leftButton').addEventListener('click', () => {
-            player.x -= player.speed;
-            if (player.x < 0) player.x = 0;
-        });
+        rightButton.addEventListener('mousedown', () => (movingRight = true));
+        rightButton.addEventListener('mouseup', () => (movingRight = false));
+        rightButton.addEventListener('touchstart', () => (movingRight = true));
+        rightButton.addEventListener('touchend', () => (movingRight = false));
 
-        document.getElementById('rightButton').addEventListener('click', () => {
-            player.x += player.speed;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        });
-
-        // Start the
+        // Start the game
+        startTimer();
+        gameLoop();
+    </script>
+</body>
+</html>
