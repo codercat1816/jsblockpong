@@ -16,7 +16,6 @@
         }
         canvas {
             display: block;
-            background: black;
         }
         .controls {
             position: fixed;
@@ -72,7 +71,9 @@
 
         // Game loop
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Clear and set background
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw player
             ctx.fillStyle = 'blue';
@@ -133,9 +134,4 @@
             if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
         });
 
-        // Start the game
-        startTimer();
-        gameLoop();
-    </script>
-</body>
-</html>
+        // Start the
