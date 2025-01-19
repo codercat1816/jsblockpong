@@ -8,14 +8,42 @@
         body {
             margin: 0;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            height: 100vh;
         }
         canvas {
             display: block;
+            background: black;
+        }
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .controls button {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            color: black;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    <div class="controls">
+        <button id="leftButton">◀</button>
+        <button id="rightButton">▶</button>
+    </div>
     <script>
         // Canvas setup
         const canvas = document.getElementById('gameCanvas');
@@ -24,7 +52,7 @@
         canvas.height = 480;
 
         // Game variables
-        let player = { x: 100, y: 420, width: 70, height: 10, speed: 10 };
+        let player = { x: canvas.width / 2 - 35, y: 420, width: 70, height: 10, speed: 10 };
         let platforms = [
             { x: 300, y: 200, width: 50, height: 10, color: 'red', points: 1, velocity: 2 },
             { x: 100, y: 250, width: 50, height: 10, color: 'yellow', points: 2, velocity: 2 },
@@ -32,6 +60,15 @@
         ];
         let score = 0;
         let difficulty = 2;
+        let timeElapsed = 0;
+        let timerInterval;
+
+        // Start timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+            }, 1000);
+        }
 
         // Game loop
         function gameLoop() {
@@ -64,11 +101,12 @@
                 }
             });
 
-            // Display score and difficulty
+            // Display score, difficulty, and timer
             ctx.fillStyle = 'white';
             ctx.font = '20px Arial';
             ctx.fillText('Score: ' + score, 10, 20);
             ctx.fillText('Difficulty: ' + difficulty, 10, 40);
+            ctx.fillText('Time: ' + timeElapsed + 's', 10, 60);
 
             // Request next frame
             requestAnimationFrame(gameLoop);
@@ -84,7 +122,19 @@
             if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
         });
 
+        // Handle mobile controls
+        document.getElementById('leftButton').addEventListener('click', () => {
+            player.x -= player.speed;
+            if (player.x < 0) player.x = 0;
+        });
+
+        document.getElementById('rightButton').addEventListener('click', () => {
+            player.x += player.speed;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        });
+
         // Start the game
+        startTimer();
         gameLoop();
     </script>
 </body>
